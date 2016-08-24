@@ -7,14 +7,18 @@ public class PreProcessador {
 
 	private static final char[] CARACTERES_BRANCOS = new char[] {'\n', '\t', ' ', '\r'};
 	private static final char[] SIMBOLOS_ESPECIAIS = new char[] {';', ',', '.'};
-	private List<String> palavras = new ArrayList<>();
+	private List<Palavra> palavras = new ArrayList<>();
+	private int linhaAtual = 1;
 	
-	public String[] processar(String texto) {
+	public Palavra[] processar(String texto) {
 		char[] simbolos = texto.toCharArray();
 		String palavra = "";
 		for (char c : simbolos) {
 			if (isCaractereBranco(c)) {
 				addPalavra(palavra);
+				if (c == '\n') {
+					this.linhaAtual++;
+				}
 				palavra = "";
 			} else if (isSimboloEspecial(c)) {
 				addPalavra(palavra);
@@ -26,12 +30,12 @@ public class PreProcessador {
 			}
 		}
 		addPalavra(palavra);
-		return palavras.toArray(new String[palavras.size()]);
+		return palavras.toArray(new Palavra[palavras.size()]);
 	}
 
 	private void addPalavra(String palavra) {
 		if (!palavra.isEmpty()) {
-			palavras.add(palavra);
+			palavras.add(new Palavra(this.linhaAtual, palavra));
 		}
 	}
 
@@ -44,7 +48,7 @@ public class PreProcessador {
 		return false;
 	}
 	
-	private boolean isSimboloEspecial(char c) {
+	public static boolean isSimboloEspecial(char c) {
 		for (char caractere : SIMBOLOS_ESPECIAIS) {
 			if (caractere == c) {
 				return true;
